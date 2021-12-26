@@ -42,24 +42,16 @@ const fetch = require('node-fetch');
 })();
 
 async function loadHerokuBuild(repoName) {
-    console.log('#### Token test ####');
-    console.log(process.env.TEST_ENV_VAR);
-    
-    const response = await fetch(
-        `https://api.heroku.com/apps/${repoName}/builds`,
-        {
-          method: 'GET',
-          headers: {
+    const resp = await fetch(`https://api.heroku.com/apps/${repoName}/builds`, {
+        method: 'GET',
+        headers: {
             Authorization: `Bearer ${process.env.HEROKU_AUTH_TOKEN}`,
             Accept: 'application/vnd.heroku+json; version=3',
-            Range: 'created_at; order=desc, max=1;',
-          },
+            "Content-Type": "application/json; charset=UTF-8",
+            Range: 'created_at; order=desc, max=1;'
         }
-      );
+    });
 
-    console.log('#### Heroku API Response ####');
-    console.log(response);
-
-    const firstBuild = (await response.json())[0];
+    const firstBuild = (await resp.json())[0];
     return firstBuild;
 }
