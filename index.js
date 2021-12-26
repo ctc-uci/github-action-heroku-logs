@@ -17,7 +17,7 @@ const fetch = require('node-fetch');
 
     const repoName = tools.context.payload.repository.name;
     const appName = tools.context.payload.deployment.environment;
-    const issueNumber = appName.replace(`${repoName}-pr-`, '');
+    const pullNumber = tools.context.payload.pullRequest.pull_number;
 
     // Fetch the latest build
     let build = await loadHerokuBuild(appName);
@@ -26,17 +26,16 @@ const fetch = require('node-fetch');
     let logResponse = await fetch(build.output_stream_url);
     const logText = await logResponse.text();
 
-    // Create a comment on the issue with the logs
-    let herokuLink = '<a href="https://dashboard.heroku.com/apps/'+appName+'/activity/">View on Heroku</a>';
+    const msgBody = "⚠️ Heroku Deployment Failed ⚠️ \n" + "```\n" + logText + "\n```"
 
-    const issueDetails = {
+    const reviewCommentDetails = {
         owner: tools.context.payload.repository.owner.login,
         repo: repoName,
-        issue_number: issueNumber,
-        body: herokuLink+"\n ```\n" + logText + "\n```"
+        pull_number: pullNumber,
+        body: msgBody
     };
 
-    await tools.github.issues.createComment(issueDetails)
+    await tools.github.pulls.createReviewComment(reviewCommentDetails)
 
     tools.exit.success("Logs posted");
 })();
