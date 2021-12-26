@@ -47,7 +47,7 @@ async function loadHerokuBuild(repoName) {
         {
           method: 'GET',
           headers: {
-            Authorization: `Bearer ${env.HEROKU_AUTH_TOKEN}`,
+            Authorization: `Bearer ${process.env.HEROKU_AUTH_TOKEN}`,
             Accept: 'application/vnd.heroku+json; version=3',
             Range: 'created_at; order=desc, max=1;',
           },
