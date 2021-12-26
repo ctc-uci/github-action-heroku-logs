@@ -17,7 +17,22 @@ const fetch = require('node-fetch');
 
     const repoName = tools.context.payload.repository.name;
     const appName = tools.context.payload.deployment.environment;
-    const pullNumber = tools.context.payload.pullRequest.pull_number;
+
+    // TODO: use sha or ref to get PR number
+    // See: https://stackoverflow.com/questions/66092415/get-corresponding-pr-from-github-deployment-status-webhook
+    // https://docs.github.com/en/rest/reference/commits#list-pull-requests-associated-with-a-commit
+
+    const prs = tools.github.repos.listPullRequestsAssociatedWithCommit({
+        owner: tools.context.payload.repository.owner.login,
+        repo: repoName,
+        commit_sha: tools.context.payload.sha
+    });
+
+    console.log('### PRs associated with current commit ###');
+    console.log(prs);
+
+    // const pullNumber = tools.context.payload.pullRequest.pull_number;
+    const pullNumber = -1;
 
     // Fetch the latest build
     let build = await loadHerokuBuild(appName);
