@@ -42,6 +42,9 @@ const fetch = require('node-fetch');
 })();
 
 async function loadHerokuBuild(repoName) {
+    console.log('#### Token test ####');
+    console.log(process.env.TEST_ENV_VAR);
+    
     const response = await fetch(
         `https://api.heroku.com/apps/${repoName}/builds`,
         {
