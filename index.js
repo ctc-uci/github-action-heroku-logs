@@ -4,7 +4,8 @@ const fetch = require('node-fetch');
 (async function() {
     const tools = new Toolkit({
         event: ['deployment_status'],
-        secrets: ['GITHUB_TOKEN', 'HEROKU_AUTH_TOKEN']
+        secrets: ['GITHUB_TOKEN', 'HEROKU_AUTH_TOKEN'],
+        token: process.env.GITHUB_TOKEN
     });
 
     console.log(tools.context);
