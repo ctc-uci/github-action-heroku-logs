@@ -7,6 +7,7 @@
     "build": "npx @vercel/ncc build && npx convert-action"
   },
   "dependencies": {
+    "@octokit/graphql": "^4.8.0",
     "actions-toolkit": "^2.1.0",
     "node-fetch": "^2.6.1"
   }
