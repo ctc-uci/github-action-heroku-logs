@@ -23,16 +23,38 @@ const fetch = require('node-fetch');
     // See: https://stackoverflow.com/questions/66092415/get-corresponding-pr-from-github-deployment-status-webhook
     // https://docs.github.com/en/rest/reference/commits#list-pull-requests-associated-with-a-commit
 
-    const prs = await tools.github.repos.listPullRequestsAssociatedWithCommit({
-        owner: tools.context.payload.repository.owner.login,
-        repo: repoName,
-        commit_sha: tools.context.sha
-    });
+    const prQuery = await tools.github.graphql(
+        `
+        repository(owner: $owner, name: $repoName) {
+            object(oid: $commitSha) {
+              ... on Commit {
+                associatedPullRequests (last: 1) {
+                  edges {
+                    node {
+                      number
+                    }
+                  }
+                }
+              }
+            }
+          }
+        `,
+        {
+            owner: tools.context.payload.repository.owner.login,
+            commitSha: tools.context.sha,
+            repoName
+        }
+    );
 
-    console.log('### PRs associated with current commit ###');
-    console.log(prs);
+    console.log('### PR Query result ###');
+    console.log(prQuery);
 
-    // const pullNumber = tools.context.payload.pullRequest.pull_number;
+    // const prs = await tools.github.repos.listPullRequestsAssociatedWithCommit({
+    //     owner: tools.context.payload.repository.owner.login,
+    //     repo: repoName,
+    //     commit_sha: tools.context.sha
+    // });
+
     const pullNumber = -1;
 
     // Fetch the latest build
