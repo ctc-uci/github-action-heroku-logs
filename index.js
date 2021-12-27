@@ -1,5 +1,4 @@
 const { Toolkit } = require('actions-toolkit');
-const { graphql } = require("@octokit/graphql");
 const fetch = require('node-fetch');
 
 (async function() {
@@ -24,7 +23,7 @@ const fetch = require('node-fetch');
     // See: https://stackoverflow.com/questions/66092415/get-corresponding-pr-from-github-deployment-status-webhook
     // https://docs.github.com/en/rest/reference/commits#list-pull-requests-associated-with-a-commit
 
-    const { prNumber } = await graphql(
+    const prQuery = await tools.github.graphql(
         `
         repository(owner: $owner, name: $repoName) {
             object(oid: $commitSha) {
@@ -43,15 +42,12 @@ const fetch = require('node-fetch');
         {
             owner: tools.context.payload.repository.owner.login,
             commitSha: tools.context.sha,
-            repoName,
-            headers: {
-                authorization: `token ${process.env.GITHUB_TOKEN}`,
-            },
+            repoName
         }
     );
 
     console.log('### PR Query result ###');
-    console.log(prNumber);
+    console.log(prQuery);
 
     // const prs = await tools.github.repos.listPullRequestsAssociatedWithCommit({
     //     owner: tools.context.payload.repository.owner.login,
