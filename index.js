@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 (async function() {
     const tools = new Toolkit({
         event: ['deployment_status'],
-        secrets: ['GITHUB_TOKEN', 'HEROKU_AUTH_TOKEN'],
-        token: process.env.GITHUB_TOKEN
+        secrets: ['AUTH_TOKEN', 'DEVOPS_PAT_TOKEN', 'HEROKU_AUTH_TOKEN'],
+        token: process.env.AUTH_TOKEN
     });
 
     console.log(tools.context);
@@ -27,7 +27,7 @@ const fetch = require('node-fetch');
     // https://docs.github.com/en/rest/reference/commits#list-pull-requests-associated-with-a-commit
 
     const { prNum } = await graphql({
-      query: ` query ($owner: String!, $repoName: String!, $commitSha: GitObjectID!) { 
+      query: `query ($owner: String!, $repoName: String!, $commitSha: GitObjectID!) { 
         repository(owner: $owner, name: $repoName) {
             object(oid: $commitSha) {
               ... on Commit {
@@ -45,9 +45,9 @@ const fetch = require('node-fetch');
       `,
       owner: tools.context.payload.repository.owner.login,
       commitSha: tools.context.sha,
-      repoName,
+      repoName: repoName,
       headers: {
-        authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        authorization: `token ${process.env.AUTH_TOKEN}`,
       },
     });
 
