@@ -22,8 +22,8 @@ const fetch = require('node-fetch');
     // Fetch number of PR associated with this deployment
     const prNum = await fetchPRNumber(
       repoOwner,
-      tools.context.sha,
-      repoName
+      repoName,
+      tools.context.sha
     );
 
     // Fetch the latest build
@@ -37,18 +37,18 @@ const fetch = require('node-fetch');
     const msgBody = "### ⚠️ **Heroku Deployment Failed** ⚠️ \n" + "```\n" + logText + "\n```"
 
     const reviewCommentDetails = {
-        owner: repoOwner,
-        repo: repoName,
-        issue_number: prNum,
-        body: msgBody
+      owner: repoOwner,
+      repo: repoName,
+      issue_number: prNum,
+      body: msgBody
     };
 
     await tools.github.issues.createComment(reviewCommentDetails);
 
-    tools.exit.success("Logs posted");
+    tools.exit.success('Logs posted');
 })();
 
-async function fetchPRNumber(owner, commitSha, repoName) {
+async function fetchPRNumber(owner, repoName, commitSha) {
   const prQuery = await graphql({
     query: `query ($owner: String!, $repoName: String!, $commitSha: GitObjectID!) {
       repository(owner: $owner, name: $repoName) {
@@ -67,8 +67,8 @@ async function fetchPRNumber(owner, commitSha, repoName) {
       }
     `,
     owner,
-    commitSha,
     repoName,
+    commitSha,
     headers: {
       authorization: `token ${process.env.GITHUB_TOKEN}`,
     },
@@ -81,13 +81,13 @@ async function fetchPRNumber(owner, commitSha, repoName) {
 
 async function loadHerokuBuild(repoName) {
     const resp = await fetch(`https://api.heroku.com/apps/${repoName}/builds`, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${process.env.HEROKU_AUTH_TOKEN}`,
-            Accept: 'application/vnd.heroku+json; version=3',
-            "Content-Type": "application/json; charset=UTF-8",
-            Range: 'created_at; order=desc, max=1;'
-        }
+      method: 'GET',
+      headers: {
+          Authorization: `Bearer ${process.env.HEROKU_AUTH_TOKEN}`,
+          Accept: 'application/vnd.heroku+json; version=3',
+          'Content-Type': "application/json; charset=UTF-8",
+          Range: 'created_at; order=desc, max=1;'
+      }
     });
 
     const firstBuild = (await resp.json())[0];
