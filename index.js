@@ -1,4 +1,5 @@
 const { Toolkit } = require('actions-toolkit');
+const { graphql } = require('@octokit/graphql');
 const fetch = require('node-fetch');
 
 (async function() {
@@ -23,43 +24,42 @@ const fetch = require('node-fetch');
     // See: https://stackoverflow.com/questions/66092415/get-corresponding-pr-from-github-deployment-status-webhook
     // https://docs.github.com/en/rest/reference/commits#list-pull-requests-associated-with-a-commit
 
-    // const prQuery = await tools.github.graphql(
-    //     `
-    //     repository(owner: $owner, name: $repoName) {
-    //         object(oid: $commitSha) {
-    //           ... on Commit {
-    //             associatedPullRequests (last: 1) {
-    //               edges {
-    //                 node {
-    //                   number
-    //                 }
-    //               }
-    //             }
-    //           }
-    //         }
-    //       }
-    //     `,
-    //     {
-    //         owner: tools.context.payload.repository.owner.login,
-    //         commitSha: tools.context.sha,
-    //         repoName,
-    //         headers: {
-    //           authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-    //         },
-    //     }
-    // );
-
-    // console.log('### PR Query result ###');
-    // console.log(prQuery);
-
-    const prs = await tools.github.repos.listPullRequestsAssociatedWithCommit({
-        owner: tools.context.payload.repository.owner.login,
-        repo: repoName,
-        commit_sha: tools.context.sha
+    const { prNum } = await graphql({
+      query: ` query ($owner: String!, $repoName: String!, $commitSha: GitObjectID!) { 
+        repository(owner: $owner, name: $repoName) {
+            object(oid: $commitSha) {
+              ... on Commit {
+                associatedPullRequests (last: 1) {
+                  edges {
+                    node {
+                      number
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      `,
+      owner: tools.context.payload.repository.owner.login,
+      commitSha: tools.context.sha,
+      repoName,
+      headers: {
+        authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+      },
     });
 
     console.log('### PR Query result ###');
-    console.log(prs);
+    console.log(prNum);
+
+    // const prs = await tools.github.repos.listPullRequestsAssociatedWithCommit({
+    //     owner: tools.context.payload.repository.owner.login,
+    //     repo: repoName,
+    //     commit_sha: tools.context.sha
+    // });
+
+    // console.log('### PR Query result ###');
+    // console.log(prs);
 
     const pullNumber = -1;
 
