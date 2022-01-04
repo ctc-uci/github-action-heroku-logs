@@ -17,6 +17,8 @@ const fetch = require('node-fetch');
         tools.exit.neutral(`Deploy was not a failure. Got '${deployState}'`);
     }
 
+    console.log(`### DEPLOY STATE: ${deployState}`);
+
     const repoName = tools.context.payload.repository.name;
     const appName = tools.context.payload.deployment.environment;
 
