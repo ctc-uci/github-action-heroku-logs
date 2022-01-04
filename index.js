@@ -12,7 +12,7 @@ const fetch = require('node-fetch');
     // Only continue if deployment was a failure
     const deployState = tools.context.payload.deployment_status.state;
     if (deployState !== 'failure') {
-        tools.exit.neutral(`Deploy was not a failure. Got '${deployState}'`);
+        tools.exit.success(`Deploy was not a failure. Got '${deployState}'`);
     }
 
     const repoOwner = tools.context.payload.repository.owner.login;
