@@ -5,8 +5,8 @@ const fetch = require('node-fetch');
 (async function() {
     const tools = new Toolkit({
         event: ['deployment_status'],
-        secrets: ['AUTH_TOKEN', 'DEVOPS_PAT_TOKEN', 'HEROKU_AUTH_TOKEN'],
-        token: process.env.AUTH_TOKEN
+        secrets: ['GITHUB_TOKEN', 'HEROKU_AUTH_TOKEN'],
+        token: process.env.GITHUB_TOKEN
     });
 
     // Only continue if deployment was a failure
@@ -70,7 +70,7 @@ async function fetchPRNumber(owner, commitSha, repoName) {
     commitSha,
     repoName,
     headers: {
-      authorization: `token ${process.env.AUTH_TOKEN}`,
+      authorization: `token ${process.env.GITHUB_TOKEN}`,
     },
   });
 
