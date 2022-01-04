@@ -39,7 +39,7 @@ const fetch = require('node-fetch');
     const reviewCommentDetails = {
         owner: repoOwner,
         repo: repoName,
-        pull_number: prNum,
+        issue_number: prNum,
         body: msgBody
     };
 
