@@ -42,7 +42,10 @@ const fetch = require('node-fetch');
         {
             owner: tools.context.payload.repository.owner.login,
             commitSha: tools.context.sha,
-            repoName
+            repoName,
+            headers: {
+              authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+            },
         }
     );
 
