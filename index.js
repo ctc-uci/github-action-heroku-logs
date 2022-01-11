@@ -9,6 +9,9 @@ const fetch = require('node-fetch');
         token: process.env.GITHUB_TOKEN
     });
 
+    // Wait for `build_delay` seconds for app to be built
+    await new Promise(r => setTimeout(r, tools.inputs.build_delay*1000));
+
     // Only continue if deployment was a failure
     const deployState = tools.context.payload.deployment_status.state;
     if (deployState !== 'failure') {
